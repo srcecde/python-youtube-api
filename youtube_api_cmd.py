@@ -11,6 +11,7 @@ Email: chiragr83@gmail.com
 """
 
 import json
+import sys
 from urllib import *
 import argparse
 from urllib.parse import urlparse, urlencode, parse_qs
@@ -28,6 +29,7 @@ class YouTubeApi():
         parser = argparse.ArgumentParser()
         mxRes = 20
         vid = str()
+        parser.add_argument("--c", help="calls comment function by keyword function", action='store_true')
         parser.add_argument("--max", help="number of comments to return")
         parser.add_argument("--videourl", help="Required URL for which comments to return")
         parser.add_argument("--key", help="Required API key")
@@ -38,10 +40,10 @@ class YouTubeApi():
             args.max = mxRes
 
         if not args.videourl:
-            exit("Please specify video URL using the --videourl= parameter.")
+            exit("Please specify video URL using the --videourl=parameter.")
 
         if not args.key:
-            exit("Please specify API key using the --key= parameter.")
+            exit("Please specify API key using the --key=parameter.")
 
         try:
             video_id = urlparse(str(args.videourl))
@@ -76,9 +78,11 @@ class YouTubeApi():
             print("Cannot Open URL or Fetch comments at a moment")
 
     def search_keyword(self):
+
         parser = argparse.ArgumentParser()
         mxRes = 20
-        parser.add_argument("--search", help="Search Term", default="YouTube")
+        parser.add_argument("--s", help="calls the search by keyword function", action='store_true')
+        parser.add_argument("--search", help="Search Term", default="Srce Cde")
         parser.add_argument("--max", help="number of results to return")
         parser.add_argument("--key", help="Required API key")
 
@@ -119,9 +123,9 @@ class YouTubeApi():
                   playlists.append("{} ({})".format(search_result["snippet"]["title"],
                                     search_result["id"]["playlistId"]))
 
-            print("Videos:\n".join(videos), "\n")
-            print("Channels:\n".join(channels), "\n")
-            print("Playlists:\n".join(playlists), "\n")
+            print("Videos:\n", "\n".join(videos), "\n")
+            print("Channels:\n", "\n".join(channels), "\n")
+            print("Playlists:\n", "\n".join(playlists), "\n")
 
         except:
             print("Cannot Open URL or Fetch comments at a moment")
@@ -129,9 +133,13 @@ class YouTubeApi():
 
 def main():
     y = YouTubeApi()
-    # y.get_video_comment()
-    y.search_keyword()
 
+    if str(sys.argv[1]) == "--s":
+        y.search_keyword()
+    elif str(sys.argv[1]) == "--c":
+        y.get_video_comment()
+    else:
+        print("Invalid Arguments\nAdd --s for searching video by keyword after the filename\nAdd --c to list comments after the filename")
 
 if __name__ == '__main__':
     main()
