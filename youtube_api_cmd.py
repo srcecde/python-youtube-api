@@ -131,6 +131,53 @@ class YouTubeApi():
             print("Cannot Open URL or Fetch comments at a moment")
 
 
+    def channel_videos(self):
+        parser = argparse.ArgumentParser()
+        mxRes = 20
+        parser.add_argument("--sc", help="calls the search by channel by keyword function", action='store_true')
+        parser.add_argument("--channelid", help="Search Term", default="Srce Cde")
+        parser.add_argument("--max", help="number of results to return")
+        parser.add_argument("--key", help="Required API key")
+
+        args = parser.parse_args()
+
+        if not args.max:
+            args.max = mxRes
+
+        if not args.channelid:
+            exit("Please specify channelid using the --channelid= parameter.")
+
+        if not args.key:
+            exit("Please specify API key using the --key= parameter.")
+
+        parms = {
+                   'part': 'id,snippet',
+                   'channelId': args.channelid,
+                   'maxResults': args.max,
+                   'key': args.key
+               }
+
+        try:
+            f = urlopen(YOUTUBE_SEARCH_URL + '?' + urlencode(parms))
+            data = f.read()
+            f.close()
+            matches = data.decode("utf-8")
+
+            search_response = json.loads(matches)
+
+            videos = []
+
+            for search_result in search_response.get("items", []):
+                if search_result["id"]["kind"] == "youtube#video":
+                    videos.append("{} ({})".format(search_result["snippet"]["title"],
+                                             search_result["id"]["videoId"]))
+
+            print("###Videos:###\n", "\n".join(videos), "\n")
+
+        except:
+            print("Cannot Open URL or Fetch comments at a moment")
+
+
 def main():
     y = YouTubeApi()
 
@@ -138,8 +185,11 @@ def main():
         y.search_keyword()
     elif str(sys.argv[1]) == "--c":
         y.get_video_comment()
+    elif str(sys.argv[1]) == "--sc":
+        y.channel_videos()
     else:
-        print("Invalid Arguments\nAdd --s for searching video by keyword after the filename\nAdd --c to list comments after the filename")
+        print("Invalid Arguments\nAdd --s for searching video by keyword after the filename\nAdd --c to list comments after the filename\nAdd --sc to list vidoes based on channel id")
+
 
 if __name__ == '__main__':
     main()
