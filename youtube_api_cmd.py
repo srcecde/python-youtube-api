@@ -26,6 +26,13 @@ class YouTubeApi():
 
     def get_video_comment(self):
 
+        def load_comments(self):
+            for item in mat["items"]:
+                comment = item["snippet"]["topLevelComment"]
+                author = comment["snippet"]["authorDisplayName"]
+                text = comment["snippet"]["textDisplay"]
+                print("Comment by {}: {}".format(author, text))
+
         parser = argparse.ArgumentParser()
         mxRes = 20
         vid = str()
@@ -61,23 +68,49 @@ class YouTubeApi():
                 }
 
         try:
-            f = urlopen(YOUTUBE_COMMENT_URL + '?' + urlencode(parms))
-            data = f.read()
-            f.close()
-            matches = data.decode("utf-8")
 
+            matches = self.openURL(YOUTUBE_COMMENT_URL, parms)
+            i = 2
             mat = json.loads(matches)
+            nextPageToken = mat.get("nextPageToken")
+            print("\nPage : 1")
+            print("------------------------------------------------------------------")
+            load_comments(self)
 
-            for item in mat["items"]:
-                comment = item["snippet"]["topLevelComment"]
-                author = comment["snippet"]["authorDisplayName"]
-                text = comment["snippet"]["textDisplay"]
-                print("Comment by {}: {}".format(author, text))
+            while nextPageToken:
+                parms.update({'pageToken': nextPageToken})
+                matches = self.openURL(YOUTUBE_COMMENT_URL, parms)
+                mat = json.loads(matches)
+                nextPageToken = mat.get("nextPageToken")
+                print("\nPage : ", i)
+                print("------------------------------------------------------------------")
+
+                load_comments(self)
+
+                i += 1
+        except KeyboardInterrupt:
+            print("User Aborted the Operation")
 
         except:
             print("Cannot Open URL or Fetch comments at a moment")
 
     def search_keyword(self):
+
+        def load_search_res(self):
+            for search_result in search_response.get("items", []):
+                if search_result["id"]["kind"] == "youtube#video":
+                  videos.append("{} ({})".format(search_result["snippet"]["title"],
+                                             search_result["id"]["videoId"]))
+                elif search_result["id"]["kind"] == "youtube#channel":
+                  channels.append("{} ({})".format(search_result["snippet"]["title"],
+                                               search_result["id"]["channelId"]))
+                elif search_result["id"]["kind"] == "youtube#playlist":
+                  playlists.append("{} ({})".format(search_result["snippet"]["title"],
+                                    search_result["id"]["playlistId"]))
+
+            print("Videos:\n", "\n".join(videos), "\n")
+            print("Channels:\n", "\n".join(channels), "\n")
+            print("Playlists:\n", "\n".join(playlists), "\n")
 
         parser = argparse.ArgumentParser()
         mxRes = 20
@@ -100,38 +133,52 @@ class YouTubeApi():
                     'maxResults': args.max,
                     'key': args.key
                 }
+
         try:
-            f = urlopen(YOUTUBE_SEARCH_URL + '?' + urlencode(parms))
-            data = f.read()
-            f.close()
-            matches = data.decode("utf-8")
+            matches = self.openURL(YOUTUBE_SEARCH_URL, parms)
 
             search_response = json.loads(matches)
+            i = 2
+
+            nextPageToken = search_response.get("nextPageToken")
 
             videos = []
             channels = []
             playlists = []
+            print("\nPage : 1")
+            print("------------------------------------------------------------------")
+            load_search_res(self)
 
-            for search_result in search_response.get("items", []):
-                if search_result["id"]["kind"] == "youtube#video":
-                  videos.append("{} ({})".format(search_result["snippet"]["title"],
-                                             search_result["id"]["videoId"]))
-                elif search_result["id"]["kind"] == "youtube#channel":
-                  channels.append("{} ({})".format(search_result["snippet"]["title"],
-                                               search_result["id"]["channelId"]))
-                elif search_result["id"]["kind"] == "youtube#playlist":
-                  playlists.append("{} ({})".format(search_result["snippet"]["title"],
-                                    search_result["id"]["playlistId"]))
+            while nextPageToken:
+                parms.update({'pageToken': nextPageToken})
+                matches = self.openURL(YOUTUBE_SEARCH_URL, parms)
 
-            print("Videos:\n", "\n".join(videos), "\n")
-            print("Channels:\n", "\n".join(channels), "\n")
-            print("Playlists:\n", "\n".join(playlists), "\n")
+                search_response = json.loads(matches)
+                nextPageToken = search_response.get("nextPageToken")
+                print("Page : ", i)
+                print("------------------------------------------------------------------")
+
+                load_search_res(self)
+
+                i += 1
+
+        except KeyboardInterrupt:
+            print("User Aborted the Operation")
 
         except:
             print("Cannot Open URL or Fetch comments at a moment")
 
-
     def channel_videos(self):
+
+        def load_channel_vid(self):
+
+            for search_result in search_response.get("items", []):
+                if search_result["id"]["kind"] == "youtube#video":
+                    videos.append("{} ({})".format(search_result["snippet"]["title"],
+                                             search_result["id"]["videoId"]))
+
+            print("###Videos:###\n", "\n".join(videos), "\n")
+
         parser = argparse.ArgumentParser()
         mxRes = 20
         parser.add_argument("--sc", help="calls the search by channel by keyword function", action='store_true')
@@ -158,24 +205,44 @@ class YouTubeApi():
                }
 
         try:
-            f = urlopen(YOUTUBE_SEARCH_URL + '?' + urlencode(parms))
-            data = f.read()
-            f.close()
-            matches = data.decode("utf-8")
+            matches = self.openURL(YOUTUBE_SEARCH_URL, parms)
 
             search_response = json.loads(matches)
 
             videos = []
+            i = 2
 
-            for search_result in search_response.get("items", []):
-                if search_result["id"]["kind"] == "youtube#video":
-                    videos.append("{} ({})".format(search_result["snippet"]["title"],
-                                             search_result["id"]["videoId"]))
+            nextPageToken = search_response.get("nextPageToken")
+            print("\nPage : 1")
+            print("------------------------------------------------------------------")
 
-            print("###Videos:###\n", "\n".join(videos), "\n")
+            load_channel_vid(self)
+
+            while nextPageToken:
+                    parms.update({'pageToken': nextPageToken})
+                    matches = self.openURL(YOUTUBE_SEARCH_URL, parms)
+
+                    search_response = json.loads(matches)
+                    nextPageToken = search_response.get("nextPageToken")
+                    print("Page : ", i)
+                    print("------------------------------------------------------------------")
+
+                    load_channel_vid(self)
+
+                    i += 1
+
+        except KeyboardInterrupt:
+            print("User Aborted the Operation")
 
         except:
             print("Cannot Open URL or Fetch comments at a moment")
+
+    def openURL(self, url, parms):
+            f = urlopen(url + '?' + urlencode(parms))
+            data = f.read()
+            f.close()
+            matches = data.decode("utf-8")
+            return matches
 
 
 def main():
