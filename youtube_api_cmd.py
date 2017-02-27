@@ -115,6 +115,7 @@ class YouTubeApi():
         parser = argparse.ArgumentParser()
         mxRes = 20
         parser.add_argument("--s", help="calls the search by keyword function", action='store_true')
+        parser.add_argument("--r", help="define country code for search results for specific country", default="IN")
         parser.add_argument("--search", help="Search Term", default="Srce Cde")
         parser.add_argument("--max", help="number of results to return")
         parser.add_argument("--key", help="Required API key")
@@ -131,6 +132,7 @@ class YouTubeApi():
                     'q': args.search,
                     'part': 'id,snippet',
                     'maxResults': args.max,
+                    'regionCode': args.r,
                     'key': args.key
                 }
 
@@ -145,7 +147,7 @@ class YouTubeApi():
             videos = []
             channels = []
             playlists = []
-            print("\nPage : 1")
+            print("\nPage : 1 --- Region : {}".format(args.r))
             print("------------------------------------------------------------------")
             load_search_res(self)
 
@@ -155,7 +157,7 @@ class YouTubeApi():
 
                 search_response = json.loads(matches)
                 nextPageToken = search_response.get("nextPageToken")
-                print("Page : ", i)
+                print("Page : {} --- Region : {}".format(i, args.r))
                 print("------------------------------------------------------------------")
 
                 load_search_res(self)

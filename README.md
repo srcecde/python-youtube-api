@@ -27,6 +27,7 @@ You are required to get the API key from Google API console in order to use this
 <li>python youtube_api_cmd.py --search --max --key</li>
 <li>--max parameter for defining the maximum result you want (maxlimit = 100, default=20)</li>
 <li>--search parameter for giving the keyword</li>
+<li>--r parameter for defining region (Country) For ex. --r=IN (Parameter should be a country code)</li>
 <li>--key parameter for defining your developer API key <i><b>Mandatory</b></i></li>
 <li>It will return Videos, Channel and Playlist in the respective category</li>
 </ul>
