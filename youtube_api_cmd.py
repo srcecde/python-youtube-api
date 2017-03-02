@@ -32,6 +32,12 @@ class YouTubeApi():
                 author = comment["snippet"]["authorDisplayName"]
                 text = comment["snippet"]["textDisplay"]
                 print("Comment by {}: {}".format(author, text))
+                if 'replies' in item.keys():
+                    for reply in item['replies']['comments']:
+                        rauthor = reply['snippet']['authorDisplayName']
+                        rtext = reply["snippet"]["textDisplay"]
+
+                    print("\n\tReply by {}: {}".format(rauthor, rtext), "\n")
 
         parser = argparse.ArgumentParser()
         mxRes = 20
@@ -61,7 +67,7 @@ class YouTubeApi():
             print("Invalid YouTube URL")
 
         parms = {
-                    'part': 'snippet',
+                    'part': 'snippet,replies',
                     'maxResults': args.max,
                     'videoId': vid,
                     'key': args.key
