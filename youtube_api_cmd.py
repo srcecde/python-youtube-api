@@ -70,6 +70,7 @@ class YouTubeApi():
                     'part': 'snippet,replies',
                     'maxResults': args.max,
                     'videoId': vid,
+                    'textFormat': 'plainText',
                     'key': args.key
                 }
 
