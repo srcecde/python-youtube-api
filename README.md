@@ -1,3 +1,7 @@
+This repo is forked from https://github.com/srcecde/python-youtube-api. Code courtesy to @srcecde. I modified to suit my need.
+
+<hr align="center" width="100%">
+
 <h3>Python YouTube API</h3>
 
 A basic Python YouTube v3 API to fetch data from YouTube using public API-Key without OAuth
