@@ -5,7 +5,7 @@ from urllib2 import urlopen
 from urllib import urlencode
 import json
 
-DEVELOPER_KEY = "AIzaSyCfkJCXWirc5Wk8dV1sb3Rjv7eoZKdDNnU"
+DEVELOPER_KEY = ""
 YOUTUBE_SEARCH_URL = "https://www.googleapis.com/youtube/v3/search"
 YOUTUBE_VIDEO_URL = "https://www.googleapis.com/youtube/v3/videos"
 
