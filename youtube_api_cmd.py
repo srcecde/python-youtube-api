@@ -24,21 +24,20 @@ YOUTUBE_SEARCH_URL = 'https://www.googleapis.com/youtube/v3/search'
 
 class YouTubeApi():
 
+    def load_comments(self, mat):
+        for item in mat["items"]:
+            comment = item["snippet"]["topLevelComment"]
+            author = comment["snippet"]["authorDisplayName"]
+            text = comment["snippet"]["textDisplay"]
+            print("Comment by {}: {}".format(author, text))
+            if 'replies' in item.keys():
+                for reply in item['replies']['comments']:
+                    rauthor = reply['snippet']['authorDisplayName']
+                    rtext = reply["snippet"]["textDisplay"]
+
+                print("\n\tReply by {}: {}".format(rauthor, rtext), "\n")
+
     def get_video_comment(self):
-
-        def load_comments(self):
-            for item in mat["items"]:
-                comment = item["snippet"]["topLevelComment"]
-                author = comment["snippet"]["authorDisplayName"]
-                text = comment["snippet"]["textDisplay"]
-                print("Comment by {}: {}".format(author, text))
-                if 'replies' in item.keys():
-                    for reply in item['replies']['comments']:
-                        rauthor = reply['snippet']['authorDisplayName']
-                        rtext = reply["snippet"]["textDisplay"]
-
-                    print("\n\tReply by {}: {}".format(rauthor, rtext), "\n")
-
         parser = argparse.ArgumentParser()
         mxRes = 20
         vid = str()
@@ -82,7 +81,7 @@ class YouTubeApi():
             nextPageToken = mat.get("nextPageToken")
             print("\nPage : 1")
             print("------------------------------------------------------------------")
-            load_comments(self)
+            self.load_comments(mat)
 
             while nextPageToken:
                 parms.update({'pageToken': nextPageToken})
@@ -92,7 +91,7 @@ class YouTubeApi():
                 print("\nPage : ", i)
                 print("------------------------------------------------------------------")
 
-                load_comments(self)
+                self.load_comments(mat)
 
                 i += 1
         except KeyboardInterrupt:
@@ -101,24 +100,24 @@ class YouTubeApi():
         except:
             print("Cannot Open URL or Fetch comments at a moment")
 
+    def load_search_res(self, search_response):
+        videos, channels, playlists = [], [], []
+        for search_result in search_response.get("items", []):
+            if search_result["id"]["kind"] == "youtube#video":
+              videos.append("{} ({})".format(search_result["snippet"]["title"],
+                                         search_result["id"]["videoId"]))
+            elif search_result["id"]["kind"] == "youtube#channel":
+              channels.append("{} ({})".format(search_result["snippet"]["title"],
+                                           search_result["id"]["channelId"]))
+            elif search_result["id"]["kind"] == "youtube#playlist":
+              playlists.append("{} ({})".format(search_result["snippet"]["title"],
+                                search_result["id"]["playlistId"]))
+
+        print("Videos:\n", "\n".join(videos), "\n")
+        print("Channels:\n", "\n".join(channels), "\n")
+        print("Playlists:\n", "\n".join(playlists), "\n")
+
     def search_keyword(self):
-
-        def load_search_res(self):
-            for search_result in search_response.get("items", []):
-                if search_result["id"]["kind"] == "youtube#video":
-                  videos.append("{} ({})".format(search_result["snippet"]["title"],
-                                             search_result["id"]["videoId"]))
-                elif search_result["id"]["kind"] == "youtube#channel":
-                  channels.append("{} ({})".format(search_result["snippet"]["title"],
-                                               search_result["id"]["channelId"]))
-                elif search_result["id"]["kind"] == "youtube#playlist":
-                  playlists.append("{} ({})".format(search_result["snippet"]["title"],
-                                    search_result["id"]["playlistId"]))
-
-            print("Videos:\n", "\n".join(videos), "\n")
-            print("Channels:\n", "\n".join(channels), "\n")
-            print("Playlists:\n", "\n".join(playlists), "\n")
-
         parser = argparse.ArgumentParser()
         mxRes = 20
         parser.add_argument("--s", help="calls the search by keyword function", action='store_true')
@@ -151,12 +150,9 @@ class YouTubeApi():
 
             nextPageToken = search_response.get("nextPageToken")
 
-            videos = []
-            channels = []
-            playlists = []
             print("\nPage : 1 --- Region : {}".format(args.r))
             print("------------------------------------------------------------------")
-            load_search_res(self)
+            self.load_search_res(search_response)
 
             while nextPageToken:
                 parms.update({'pageToken': nextPageToken})
@@ -167,7 +163,7 @@ class YouTubeApi():
                 print("Page : {} --- Region : {}".format(i, args.r))
                 print("------------------------------------------------------------------")
 
-                load_search_res(self)
+                self.load_search_res(search_response)
 
                 i += 1
 
@@ -177,17 +173,16 @@ class YouTubeApi():
         except:
             print("Cannot Open URL or Fetch comments at a moment")
 
+    def load_channel_vid(self, search_response):
+        videos = []
+        for search_result in search_response.get("items", []):
+            if search_result["id"]["kind"] == "youtube#video":
+                videos.append("{} ({})".format(search_result["snippet"]["title"],
+                                         search_result["id"]["videoId"]))
+
+        print("###Videos:###\n", "\n".join(videos), "\n")
+
     def channel_videos(self):
-
-        def load_channel_vid(self):
-
-            for search_result in search_response.get("items", []):
-                if search_result["id"]["kind"] == "youtube#video":
-                    videos.append("{} ({})".format(search_result["snippet"]["title"],
-                                             search_result["id"]["videoId"]))
-
-            print("###Videos:###\n", "\n".join(videos), "\n")
-
         parser = argparse.ArgumentParser()
         mxRes = 20
         parser.add_argument("--sc", help="calls the search by channel by keyword function", action='store_true')
@@ -218,14 +213,13 @@ class YouTubeApi():
 
             search_response = json.loads(matches)
 
-            videos = []
             i = 2
 
             nextPageToken = search_response.get("nextPageToken")
             print("\nPage : 1")
             print("------------------------------------------------------------------")
 
-            load_channel_vid(self)
+            self.load_channel_vid(search_response)
 
             while nextPageToken:
                     parms.update({'pageToken': nextPageToken})
@@ -236,7 +230,7 @@ class YouTubeApi():
                     print("Page : ", i)
                     print("------------------------------------------------------------------")
 
-                    load_channel_vid(self)
+                    self.load_channel_vid(search_response)
 
                     i += 1
 
