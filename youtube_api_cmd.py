@@ -3,9 +3,11 @@
 
 """
 -*- coding: utf-8 -*-
-
+========================
 Python YouTube API
-
+========================
+Developed by: Chirag Rathod (Srce Cde)
+Email: chiragr83@gmail.com
 """
 import json
 import jsonlines
