@@ -12,9 +12,9 @@ You are required to get the API key from Google API console in order to use this
   
   data = y.get_video_comment(vid='dQw4w9WgXcQ', key='*YOUTUBE API KEY*'
   
-<li> max_return parameter for defining the maximum result you want (maxlimit = 100, default=20)</li>
-<li> vid parameter for defining the youtube ID</li>
-<li> key parameter for defining your developer API key</li>
+<li> max_return: parameter for defining the maximum result you want (maxlimit = 100, default=20)</li>
+<li> vid: parameter for defining the youtube ID</li>
+<li> key: parameter for defining your developer API key</li>
 <li> videourl and --key parameter is mandatory. --max parameter is optional</li>
 </ul>
 
