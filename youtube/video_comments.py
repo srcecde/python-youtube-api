@@ -59,6 +59,3 @@ class VideoComment:
 
         df = pd.DataFrame().from_dict(self.replies)
         df.to_csv(SAVE_PATH+"comment_reply.csv")
-
-cv = VideoComment(3, "sMOc1D245SA", "AIzaSyB6esfzhEkKlWxpYwtgnwckhYo50w1izFE")
-cv.get_video_comments()
