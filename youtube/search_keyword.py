@@ -1,19 +1,13 @@
-"""
--*- coding: utf-8 -*-
-========================
-Python YouTube API
-========================
-
-Developed by: Chirag Rathod (Srce Cde)
-Email: chiragr83@gmail.com
-
-========================
-"""
+#-*- coding: utf-8 -*-
+__author__ = "Chirag Rathod (Srce Cde)"
+__license__ = "GPL 3.0"
+__email__ = "chiragr83@gmail.com"
+__maintainer__ = "Chirag Rathod (Srce Cde)"
 
 from collections import defaultdict
-import requests
 import json
 import pandas as pd
+from utils.helper import openURL
 from config import YOUTUBE_SEARCH_URL, SAVE_PATH
 
 class searchVideo:
@@ -28,10 +22,6 @@ class searchVideo:
                     'regionCode': regionCode,
                     'key': key
                 }
-
-    def openURL(self, URL, params):
-        r = requests.get(URL + "?", params=params)
-        return r.text
 
     def load_search_res(self, search_response):
         for search_result in search_response.get("items", []):
@@ -59,13 +49,13 @@ class searchVideo:
 
 
     def get_channel_videos(self):
-        url_response = json.loads(self.openURL(YOUTUBE_SEARCH_URL, self.params))
+        url_response = json.loads(openURL(YOUTUBE_SEARCH_URL, self.params))
         nextPageToken = url_response.get("nextPageToken")
         self.load_search_res(url_response)
 
         while nextPageToken:
             self.params.update({'pageToken': nextPageToken})
-            url_response = json.loads(self.openURL(YOUTUBE_SEARCH_URL, self.params))
+            url_response = json.loads(openURL(YOUTUBE_SEARCH_URL, self.params))
             nextPageToken = url_response.get("nextPageToken")
             self.load_search_res(url_response)
         self.create_df()
