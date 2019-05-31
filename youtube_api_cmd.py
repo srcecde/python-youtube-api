@@ -222,17 +222,17 @@ class YouTubeApi():
             self.load_channel_vid(search_response)
 
             while nextPageToken:
-                    parms.update({'pageToken': nextPageToken})
-                    matches = self.openURL(YOUTUBE_SEARCH_URL, parms)
+                self.parms.update({'pageToken': nextPageToken})
+                matches = self.openURL(YOUTUBE_SEARCH_URL, parms)
 
-                    search_response = json.loads(matches)
-                    nextPageToken = search_response.get("nextPageToken")
-                    print("Page : ", i)
-                    print("------------------------------------------------------------------")
+                search_response = json.loads(matches)
+                nextPageToken = search_response.get("nextPageToken")
+                print("Page : ", i)
+                print("------------------------------------------------------------------")
 
-                    self.load_channel_vid(search_response)
+                self.load_channel_vid(search_response)
 
-                    i += 1
+                i += 1
 
         except KeyboardInterrupt:
             print("User Aborted the Operation")
