@@ -12,7 +12,8 @@ from youtube.search_keyword import searchVideo
 from youtube.video_comments import VideoComment
 
 def main():
-    parser = argparse.ArgumentParser()
+    os.makedirs("output", exist_ok=True)
+    parser = argpnarse.ArgumentParser()
 
     if str(sys.argv[1]) == "--s":
         
