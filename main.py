@@ -4,6 +4,7 @@ __license__ = "GPL 3.0"
 __email__ = "chiragr83@gmail.com"
 __maintainer__ = "Chirag Rathod (Srce Cde)"
 
+import os
 import sys
 import argparse
 from urllib.parse import urlparse, urlencode, parse_qs
@@ -13,7 +14,7 @@ from youtube.video_comments import VideoComment
 
 def main():
     os.makedirs("output", exist_ok=True)
-    parser = argpnarse.ArgumentParser()
+    parser = argparse.ArgumentParser()
 
     if str(sys.argv[1]) == "--s":
         
