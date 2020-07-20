@@ -22,7 +22,7 @@ def main():
         parser.add_argument("--r", help="define country code for search results for specific country", default="IN")
         parser.add_argument("--search", help="Search Term", default="Srce Cde")
         parser.add_argument("--max", help="number of results to return", default=10)
-        parser.add_argument("--key", help="Required API key")
+        parser.add_argument("--key", help="Required API key", required=True)
         args = parser.parse_args()
 
         sv = searchVideo(args.search, args.max, args.r, args.key)
