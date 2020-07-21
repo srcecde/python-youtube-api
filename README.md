@@ -40,6 +40,8 @@ You are required to get the API key from Google API console in order to use this
 </ul>
 <b>Example: <i>python3 main.py --sc --channelid UCwDlyuX3Fkg5WNBufLnH6dw --max 10 --key AAAAAAA</i></b>
 
+<h4>Video example: https://youtu.be/ooZ98n-ZDUA</h4>
+
 <h3>YouTube API v3</h3>
 <ul>
 <li><a href="https://developers.google.com/youtube/v3/">YouTube API v3 Docs</a></li>
