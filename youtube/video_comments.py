@@ -4,6 +4,8 @@ __license__ = "GPL 3.0"
 __email__ = "chiragr83@gmail.com"
 __maintainer__ = "Chirag Rathod (Srce Cde)"
 
+import os
+
 from collections import defaultdict
 import json
 import pandas as pd
@@ -12,21 +14,26 @@ from config import YOUTUBE_COMMENT_URL, SAVE_PATH
 
 
 class VideoComment:
-    def __init__(self, maxResults, videoId, key ):
+    def __init__(self, maxResults, videoId, key, search_terms, save_folder=None):
         self.comments = defaultdict(list)
         self.replies = defaultdict(list)
+        if save_folder:
+            self.save_folder = save_folder + "/"
+        else:
+            self.save_folder = ""
         self.params = {
                     'part': 'snippet,replies',
-                    'maxResults': maxResults,
+                    'maxResults': maxResults, 
                     'videoId': videoId,
                     'textFormat': 'plainText',
+                    'searchTerms': search_terms,
                     'key': key
                 }
 
     def load_comments(self, mat):
         for item in mat["items"]:
             comment = item["snippet"]["topLevelComment"]
-            self.comments["id"].append(comment["id"])
+            self.comments["videoId"].append(comment["id"])
             self.comments["comment"].append(comment["snippet"]["textDisplay"])
             self.comments["author"].append(comment["snippet"]["authorDisplayName"])
             self.comments["likecount"].append(comment["snippet"]["likeCount"])
@@ -54,8 +61,26 @@ class VideoComment:
 
 
     def create_df(self):
-        df = pd.DataFrame().from_dict(self.comments)
-        df.to_csv(SAVE_PATH+"parent_video_comment.csv")
+        if os.path.exists(SAVE_PATH+self.save_folder) == False:
+            os.makedirs(SAVE_PATH+self.save_folder)
 
-        df = pd.DataFrame().from_dict(self.replies)
-        df.to_csv(SAVE_PATH+"comment_reply.csv")
+            df = pd.DataFrame().from_dict(self.comments)
+            df["videoId"] = self.params['videoId']
+            df.to_csv(SAVE_PATH+self.save_folder+"parent_video_comment.csv")
+
+            df = pd.DataFrame().from_dict(self.replies)
+            df["videoId"] = self.params['videoId']
+            df.to_csv(SAVE_PATH+self.save_folder+"comment_reply.csv")
+
+        else:
+            df_orig = pd.read_csv(SAVE_PATH+self.save_folder+"parent_video_comment.csv")
+            df_new = pd.DataFrame().from_dict(self.comments)
+            df_new["videoId"] = self.params['videoId']
+            df_orig = pd.concat((df_orig, df_new)).reset_index(drop=True)
+            df_orig.to_csv(SAVE_PATH+self.save_folder+"parent_video_comment.csv")
+
+            df_orig = pd.read_csv(SAVE_PATH+self.save_folder+"comment_reply.csv")
+            df_new = pd.DataFrame().from_dict(self.replies)
+            df_new["videoId"] = self.params['videoId']
+            df_orig = pd.concat((df_orig, df_new)).reset_index(drop=True)
+            df_orig.to_csv(SAVE_PATH+self.save_folder+"comment_reply.csv")

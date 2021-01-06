@@ -4,6 +4,8 @@ __license__ = "GPL 3.0"
 __email__ = "chiragr83@gmail.com"
 __maintainer__ = "Chirag Rathod (Srce Cde)"
 
+import os
+
 from collections import defaultdict
 import json
 import pandas as pd
@@ -12,11 +14,15 @@ from config import YOUTUBE_SEARCH_URL, SAVE_PATH
 
 
 class channelVideo:
-    def __init__(self, channelid, maxResults, key):
+    def __init__(self, channelid, maxResults, key, save_folder=None):
         self.videos = defaultdict(list)
+        if save_folder:
+            self.save_folder = save_folder + "/"
+        else:
+            self.save_folder = ""
         self.params = {
                    'part': 'id,snippet',
-                   'channelId': channelid,
+                   'channelId': channelid, 
                    'maxResults': maxResults,
                    'key': key
                }
@@ -44,6 +50,9 @@ class channelVideo:
         self.create_df()
 
     def create_df(self):
+        if os.path.exists(SAVE_PATH+self.save_folder) == False:
+            os.makedirs(SAVE_PATH+self.save_folder)
+
         df = pd.DataFrame().from_dict(self.videos)
-        df.to_csv(SAVE_PATH+"search_channel_id.csv")
+        df.to_csv(SAVE_PATH+self.save_folder+"search_channel_id.csv")
 
