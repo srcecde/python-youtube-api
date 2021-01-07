@@ -6,6 +6,11 @@ It can fetch video comments for a given video URL, keyword based search (returns
 
 You are required to get the API key from Google API console in order to use this script
 
+<h2>Install Dependencies</h2>
+<ul>
+<li>pip3 install -r requirements.txt</li>
+</ul>
+
 <h2>How to use</h2>
 
 <ul>
