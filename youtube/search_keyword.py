@@ -4,6 +4,8 @@ __license__ = "GPL 3.0"
 __email__ = "chiragr83@gmail.com"
 __maintainer__ = "Chirag Rathod (Srce Cde)"
 
+import os 
+
 from collections import defaultdict
 import json
 import pandas as pd
@@ -11,15 +13,24 @@ from utils.helper import openURL
 from config import YOUTUBE_SEARCH_URL, SAVE_PATH
 
 class searchVideo:
-    def __init__(self, searchTerm, maxResults, regionCode, key):
+    def __init__(self, searchTerm, maxResults, regionCode, key, location, radius, published_after, published_before, language, save_folder=None):
         self.videos = defaultdict(list)
         self.channels = defaultdict(list)
         self.playlists = defaultdict(list)
+        if save_folder:
+            self.save_folder = save_folder + "/"
+        else:
+            self.save_folder = ""
         self.params = {
                     'q': searchTerm,
                     'part': 'id,snippet',
                     'maxResults': maxResults,
                     'regionCode': regionCode,
+                    'location': location,
+                    'locationRadius': radius,
+                    'publishedAfter': published_after,
+                    'publishedBefore': published_before,
+                    'relevanceLanguage': language,
                     'key': key
                 }
 
@@ -61,12 +72,16 @@ class searchVideo:
         self.create_df()
 
     def create_df(self):
+        if os.path.exists(SAVE_PATH+self.save_folder) == False:
+            os.makedirs(SAVE_PATH+self.save_folder)
+
         df = pd.DataFrame().from_dict(self.videos)
-        df.to_csv(SAVE_PATH+"search_term_videos.csv")
+        df.to_csv(SAVE_PATH+self.save_folder+"search_term_videos.csv")
 
         df = pd.DataFrame().from_dict(self.channels)
-        df.to_csv(SAVE_PATH+"search_term_channel.csv")
+        df.to_csv(SAVE_PATH+self.save_folder+"search_term_channel.csv")
 
         df = pd.DataFrame().from_dict(self.playlists)
-        df.to_csv(SAVE_PATH+"search_term_playlist.csv")
+        df.to_csv(SAVE_PATH+self.save_folder+"search_term_playlist.csv")
+
 
