@@ -1,2 +1,4 @@
-requests==2.25.1
-pandas==1.2.0
+requests
+black
+pandas
+pylint
