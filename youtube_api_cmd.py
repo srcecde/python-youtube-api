@@ -15,24 +15,23 @@ import sys
 from urllib import *
 import argparse
 from urllib.parse import urlparse, urlencode, parse_qs
-from urllib.request import  urlopen
+from urllib.request import urlopen
 
 
-YOUTUBE_COMMENT_URL = 'https://www.googleapis.com/youtube/v3/commentThreads'
-YOUTUBE_SEARCH_URL = 'https://www.googleapis.com/youtube/v3/search'
+YOUTUBE_COMMENT_URL = "https://www.googleapis.com/youtube/v3/commentThreads"
+YOUTUBE_SEARCH_URL = "https://www.googleapis.com/youtube/v3/search"
 
 
-class YouTubeApi():
-
+class YouTubeApi:
     def load_comments(self, mat):
         for item in mat["items"]:
             comment = item["snippet"]["topLevelComment"]
             author = comment["snippet"]["authorDisplayName"]
             text = comment["snippet"]["textDisplay"]
             print("Comment by {}: {}".format(author, text))
-            if 'replies' in item.keys():
-                for reply in item['replies']['comments']:
-                    rauthor = reply['snippet']['authorDisplayName']
+            if "replies" in item.keys():
+                for reply in item["replies"]["comments"]:
+                    rauthor = reply["snippet"]["authorDisplayName"]
                     rtext = reply["snippet"]["textDisplay"]
 
                 print("\n\tReply by {}: {}".format(rauthor, rtext), "\n")
@@ -41,9 +40,15 @@ class YouTubeApi():
         parser = argparse.ArgumentParser()
         mxRes = 20
         vid = str()
-        parser.add_argument("--c", help="calls comment function by keyword function", action='store_true')
+        parser.add_argument(
+            "--c",
+            help="calls comment function by keyword function",
+            action="store_true",
+        )
         parser.add_argument("--max", help="number of comments to return")
-        parser.add_argument("--videourl", help="Required URL for which comments to return")
+        parser.add_argument(
+            "--videourl", help="Required URL for which comments to return"
+        )
         parser.add_argument("--key", help="Required API key")
 
         args = parser.parse_args()
@@ -66,12 +71,12 @@ class YouTubeApi():
             print("Invalid YouTube URL")
 
         parms = {
-                    'part': 'snippet,replies',
-                    'maxResults': args.max,
-                    'videoId': vid,
-                    'textFormat': 'plainText',
-                    'key': args.key
-                }
+            "part": "snippet,replies",
+            "maxResults": args.max,
+            "videoId": vid,
+            "textFormat": "plainText",
+            "key": args.key,
+        }
 
         try:
 
@@ -84,12 +89,14 @@ class YouTubeApi():
             self.load_comments(mat)
 
             while nextPageToken:
-                parms.update({'pageToken': nextPageToken})
+                parms.update({"pageToken": nextPageToken})
                 matches = self.openURL(YOUTUBE_COMMENT_URL, parms)
                 mat = json.loads(matches)
                 nextPageToken = mat.get("nextPageToken")
                 print("\nPage : ", i)
-                print("------------------------------------------------------------------")
+                print(
+                    "------------------------------------------------------------------"
+                )
 
                 self.load_comments(mat)
 
@@ -104,14 +111,26 @@ class YouTubeApi():
         videos, channels, playlists = [], [], []
         for search_result in search_response.get("items", []):
             if search_result["id"]["kind"] == "youtube#video":
-              videos.append("{} ({})".format(search_result["snippet"]["title"],
-                                         search_result["id"]["videoId"]))
+                videos.append(
+                    "{} ({})".format(
+                        search_result["snippet"]["title"],
+                        search_result["id"]["videoId"],
+                    )
+                )
             elif search_result["id"]["kind"] == "youtube#channel":
-              channels.append("{} ({})".format(search_result["snippet"]["title"],
-                                           search_result["id"]["channelId"]))
+                channels.append(
+                    "{} ({})".format(
+                        search_result["snippet"]["title"],
+                        search_result["id"]["channelId"],
+                    )
+                )
             elif search_result["id"]["kind"] == "youtube#playlist":
-              playlists.append("{} ({})".format(search_result["snippet"]["title"],
-                                search_result["id"]["playlistId"]))
+                playlists.append(
+                    "{} ({})".format(
+                        search_result["snippet"]["title"],
+                        search_result["id"]["playlistId"],
+                    )
+                )
 
         print("Videos:\n", "\n".join(videos), "\n")
         print("Channels:\n", "\n".join(channels), "\n")
@@ -120,8 +139,14 @@ class YouTubeApi():
     def search_keyword(self):
         parser = argparse.ArgumentParser()
         mxRes = 20
-        parser.add_argument("--s", help="calls the search by keyword function", action='store_true')
-        parser.add_argument("--r", help="define country code for search results for specific country", default="IN")
+        parser.add_argument(
+            "--s", help="calls the search by keyword function", action="store_true"
+        )
+        parser.add_argument(
+            "--r",
+            help="define country code for search results for specific country",
+            default="IN",
+        )
         parser.add_argument("--search", help="Search Term", default="Srce Cde")
         parser.add_argument("--max", help="number of results to return")
         parser.add_argument("--key", help="Required API key")
@@ -135,12 +160,12 @@ class YouTubeApi():
             exit("Please specify API key using the --key= parameter.")
 
         parms = {
-                    'q': args.search,
-                    'part': 'id,snippet',
-                    'maxResults': args.max,
-                    'regionCode': args.r,
-                    'key': args.key
-                }
+            "q": args.search,
+            "part": "id,snippet",
+            "maxResults": args.max,
+            "regionCode": args.r,
+            "key": args.key,
+        }
 
         try:
             matches = self.openURL(YOUTUBE_SEARCH_URL, parms)
@@ -155,13 +180,15 @@ class YouTubeApi():
             self.load_search_res(search_response)
 
             while nextPageToken:
-                parms.update({'pageToken': nextPageToken})
+                parms.update({"pageToken": nextPageToken})
                 matches = self.openURL(YOUTUBE_SEARCH_URL, parms)
 
                 search_response = json.loads(matches)
                 nextPageToken = search_response.get("nextPageToken")
                 print("Page : {} --- Region : {}".format(i, args.r))
-                print("------------------------------------------------------------------")
+                print(
+                    "------------------------------------------------------------------"
+                )
 
                 self.load_search_res(search_response)
 
@@ -177,15 +204,23 @@ class YouTubeApi():
         videos = []
         for search_result in search_response.get("items", []):
             if search_result["id"]["kind"] == "youtube#video":
-                videos.append("{} ({})".format(search_result["snippet"]["title"],
-                                         search_result["id"]["videoId"]))
+                videos.append(
+                    "{} ({})".format(
+                        search_result["snippet"]["title"],
+                        search_result["id"]["videoId"],
+                    )
+                )
 
         print("###Videos:###\n", "\n".join(videos), "\n")
 
     def channel_videos(self):
         parser = argparse.ArgumentParser()
         mxRes = 20
-        parser.add_argument("--sc", help="calls the search by channel by keyword function", action='store_true')
+        parser.add_argument(
+            "--sc",
+            help="calls the search by channel by keyword function",
+            action="store_true",
+        )
         parser.add_argument("--channelid", help="Search Term", default="Srce Cde")
         parser.add_argument("--max", help="number of results to return")
         parser.add_argument("--key", help="Required API key")
@@ -202,11 +237,11 @@ class YouTubeApi():
             exit("Please specify API key using the --key= parameter.")
 
         parms = {
-                   'part': 'id,snippet',
-                   'channelId': args.channelid,
-                   'maxResults': args.max,
-                   'key': args.key
-               }
+            "part": "id,snippet",
+            "channelId": args.channelid,
+            "maxResults": args.max,
+            "key": args.key,
+        }
 
         try:
             matches = self.openURL(YOUTUBE_SEARCH_URL, parms)
@@ -222,13 +257,15 @@ class YouTubeApi():
             self.load_channel_vid(search_response)
 
             while nextPageToken:
-                self.parms.update({'pageToken': nextPageToken})
+                self.parms.update({"pageToken": nextPageToken})
                 matches = self.openURL(YOUTUBE_SEARCH_URL, parms)
 
                 search_response = json.loads(matches)
                 nextPageToken = search_response.get("nextPageToken")
                 print("Page : ", i)
-                print("------------------------------------------------------------------")
+                print(
+                    "------------------------------------------------------------------"
+                )
 
                 self.load_channel_vid(search_response)
 
@@ -241,11 +278,11 @@ class YouTubeApi():
             print("Cannot Open URL or Fetch comments at a moment")
 
     def openURL(self, url, parms):
-            f = urlopen(url + '?' + urlencode(parms))
-            data = f.read()
-            f.close()
-            matches = data.decode("utf-8")
-            return matches
+        f = urlopen(url + "?" + urlencode(parms))
+        data = f.read()
+        f.close()
+        matches = data.decode("utf-8")
+        return matches
 
 
 def main():
@@ -258,8 +295,10 @@ def main():
     elif str(sys.argv[1]) == "--sc":
         y.channel_videos()
     else:
-        print("Invalid Arguments\nAdd --s for searching video by keyword after the filename\nAdd --c to list comments after the filename\nAdd --sc to list vidoes based on channel id")
+        print(
+            "Invalid Arguments\nAdd --s for searching video by keyword after the filename\nAdd --c to list comments after the filename\nAdd --sc to list vidoes based on channel id"
+        )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

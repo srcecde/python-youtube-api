@@ -1,4 +1,4 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 __author__ = "Chirag Rathod (Srce Cde)"
 __license__ = "GPL 3.0"
 __email__ = "chiragr83@gmail.com"
