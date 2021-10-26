@@ -7,9 +7,9 @@ __maintainer__ = "Chirag Rathod (Srce Cde)"
 import os
 import sys
 import argparse
-from urllib.parse import urlparse, urlencode, parse_qs
-from youtube.videos_channelid import channelVideo
-from youtube.search_keyword import searchVideo
+from urllib.parse import urlparse, parse_qs
+from youtube.videos_channelid import ChannelVideo
+from youtube.search_keyword import SearchVideo
 from youtube.video_comments import VideoComment
 
 
@@ -32,7 +32,7 @@ def main():
         parser.add_argument("--key", help="Required API key", required=True)
         args = parser.parse_args()
 
-        sv = searchVideo(args.search, args.max, args.r, args.key)
+        sv = SearchVideo(args.search, args.max, args.r, args.key)
         sv.get_channel_videos()
 
     elif str(sys.argv[1]) == "--sc":
@@ -46,7 +46,7 @@ def main():
         parser.add_argument("--key", help="Required API key", required=True)
         args = parser.parse_args()
 
-        cv = channelVideo(args.channelid, args.max, args.key)
+        cv = ChannelVideo(args.channelid, args.max, args.key)
         cv.get_channel_videos()
 
     elif str(sys.argv[1]) == "--c":
