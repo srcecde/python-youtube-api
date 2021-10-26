@@ -12,6 +12,7 @@ def openURL(URL, params):
     r = requests.get(URL + "?", params=params)
     return r.text
 
+
 def create_df(df_payload, save_path):
     df = pd.DataFrame().from_dict(df_payload)
     df.to_csv(save_path)

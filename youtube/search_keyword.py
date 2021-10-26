@@ -15,6 +15,7 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
+
 class SearchVideo:
     def __init__(self, searchTerm, maxResults, regionCode, key):
         self.save_path = f"{SAVE_PATH}/search-keyword-csv"

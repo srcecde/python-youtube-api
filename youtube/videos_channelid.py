@@ -15,6 +15,7 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
+
 class ChannelVideo:
     def __init__(self, channelid, maxResults, key):
         self.save_path = f"{SAVE_PATH}/video-channel-csv"
