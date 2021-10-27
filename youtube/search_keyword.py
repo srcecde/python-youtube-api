@@ -4,15 +4,21 @@ __license__ = "GPL 3.0"
 __email__ = "chiragr83@gmail.com"
 __maintainer__ = "Chirag Rathod (Srce Cde)"
 
+import os
 from collections import defaultdict
+import logging
 import json
-import pandas as pd
-from utils.helper import openURL
+from utils.helper import openURL, create_df
 from config import YOUTUBE_SEARCH_URL, SAVE_PATH
 
+logging.basicConfig()
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
-class searchVideo:
+
+class SearchVideo:
     def __init__(self, searchTerm, maxResults, regionCode, key):
+        self.save_path = f"{SAVE_PATH}/search-keyword-csv"
         self.videos = defaultdict(list)
         self.channels = defaultdict(list)
         self.playlists = defaultdict(list)
@@ -23,6 +29,7 @@ class searchVideo:
             "regionCode": regionCode,
             "key": key,
         }
+        os.makedirs(self.save_path, exist_ok=True)
 
     def load_search_res(self, search_response):
         for search_result in search_response.get("items", []):
@@ -67,23 +74,32 @@ class searchVideo:
                 self.playlists["playlistId"].append(search_result["id"]["playlistId"])
 
     def get_channel_videos(self):
+        logger.info("Fetching data")
         url_response = json.loads(openURL(YOUTUBE_SEARCH_URL, self.params))
         nextPageToken = url_response.get("nextPageToken")
+        try:
+            if "error" in url_response:
+                logger.error(f"{url_response['error']['message']}")
+                raise Exception("The request cannot be completed!")
+        except Exception as e:
+            logger.error(e)
+            return False
+        logger.info("Parsing data")
         self.load_search_res(url_response)
 
-        while nextPageToken:
-            self.params.update({"pageToken": nextPageToken})
-            url_response = json.loads(openURL(YOUTUBE_SEARCH_URL, self.params))
-            nextPageToken = url_response.get("nextPageToken")
-            self.load_search_res(url_response)
-        self.create_df()
+        if nextPageToken:
+            logger.info("Found paginated response")
+            logger.info("Fetching paginated response & parsing")
+            while nextPageToken:
+                self.params.update({"pageToken": nextPageToken})
+                url_response = json.loads(openURL(YOUTUBE_SEARCH_URL, self.params))
+                nextPageToken = url_response.get("nextPageToken")
+                self.load_search_res(url_response)
+        logger.info(f"Saving data as CSV at {self.save_path}")
+        self.save_data()
+        logger.info("Saved data successfully")
 
-    def create_df(self):
-        df = pd.DataFrame().from_dict(self.videos)
-        df.to_csv(SAVE_PATH + "search_term_videos.csv")
-
-        df = pd.DataFrame().from_dict(self.channels)
-        df.to_csv(SAVE_PATH + "search_term_channel.csv")
-
-        df = pd.DataFrame().from_dict(self.playlists)
-        df.to_csv(SAVE_PATH + "search_term_playlist.csv")
+    def save_data(self):
+        create_df(self.videos, f"{self.save_path}/search_term_videos.csv")
+        create_df(self.channels, f"{self.save_path}/search_term_channel.csv")
+        create_df(self.playlists, f"{self.save_path}/search_term_playlist.csv")
